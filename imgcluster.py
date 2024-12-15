@@ -3,12 +3,13 @@ import os
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
+from scipy.spatial.distance import cdist
 from sklearn.cluster import DBSCAN, KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 from tensorflow.keras.preprocessing import image
-from sklearn.decomposition import PCA
-# import umap
 
 
 class ImageClusterer:
@@ -204,6 +205,186 @@ class ImageClusterer:
 
         return self
 
+    def validate_clusters(self, max_clusters=10):
+        """
+        Validate clustering using multiple methods
+
+        :param max_clusters: Maximum number of clusters to test
+        :return: self
+        """
+        if len(self.features) == 0:
+            raise ValueError("No features available. Extract features first.")
+
+        # Run validation methods
+        print("Elbow Method Analysis:")
+        elbow_results = ClusterValidator.elbow_method(self.features, max_clusters)
+
+        print("\nSilhouette Score Analysis:")
+        silhouette_results = ClusterValidator.silhouette_analysis(
+            self.features, max_clusters
+        )
+
+        print("\nGap Statistic Analysis:")
+        gap_results = ClusterValidator.gap_statistic(self.features, max_clusters)
+
+        return self
+
+
+class ClusterValidator:
+    @staticmethod
+    def elbow_method(features, max_clusters=10):
+        """
+        Perform elbow method to find optimal number of clusters
+
+        :param features: Extracted image features
+        :param max_clusters: Maximum number of clusters to test
+        :return: Dictionary with distortion and inertia values
+        """
+        # Normalize features
+        scaler = StandardScaler()
+        scaled_features = scaler.fit_transform(features)
+
+        # Calculate distortion for different numbers of clusters
+        distortions = []
+        inertias = []
+        k_values = range(1, max_clusters + 1)
+
+        for k in k_values:
+            kmeans = KMeans(n_clusters=k, random_state=42)
+            kmeans.fit(scaled_features)
+
+            # Distortion is the average of the squared distances from each point to its assigned center
+            distortions.append(
+                np.mean(
+                    np.min(
+                        cdist(scaled_features, kmeans.cluster_centers_, "euclidean"),
+                        axis=1,
+                    )
+                )
+            )
+
+            # Inertia is the sum of squared distances of samples to their closest cluster center
+            inertias.append(kmeans.inertia_)
+
+        # Visualize results
+        plt.figure(figsize=(12, 5))
+
+        # Distortion subplot
+        plt.subplot(1, 2, 1)
+        plt.plot(k_values, distortions, "bx-")
+        plt.xlabel("Number of Clusters (k)")
+        plt.ylabel("Distortion")
+        plt.title("Elbow Method - Distortion")
+
+        # Inertia subplot
+        plt.subplot(1, 2, 2)
+        plt.plot(k_values, inertias, "rx-")
+        plt.xlabel("Number of Clusters (k)")
+        plt.ylabel("Inertia")
+        plt.title("Elbow Method - Inertia")
+
+        plt.tight_layout()
+        plt.show()
+
+        return {"k_values": k_values, "distortions": distortions, "inertias": inertias}
+
+    @staticmethod
+    def silhouette_analysis(features, max_clusters=10):
+        """
+        Compute silhouette scores for different numbers of clusters
+
+        :param features: Extracted image features
+        :param max_clusters: Maximum number of clusters to test
+        :return: Dictionary with silhouette scores
+        """
+        # Normalize features
+        scaler = StandardScaler()
+        scaled_features = scaler.fit_transform(features)
+
+        # Reduce dimensionality for visualization
+        reducer = PCA(n_components=2)
+        reduced_features = reducer.fit_transform(scaled_features)
+
+        # Calculate silhouette scores
+        silhouette_scores = []
+        k_values = range(2, max_clusters + 1)
+
+        for k in k_values:
+            # Perform clustering
+            kmeans = KMeans(n_clusters=k, random_state=42)
+            cluster_labels = kmeans.fit_predict(scaled_features)
+
+            # Compute silhouette score
+            score = silhouette_score(scaled_features, cluster_labels)
+            silhouette_scores.append(score)
+
+        # Visualize results
+        plt.figure(figsize=(10, 5))
+        plt.plot(k_values, silhouette_scores, "bo-")
+        plt.xlabel("Number of Clusters (k)")
+        plt.ylabel("Silhouette Score")
+        plt.title("Silhouette Analysis")
+        plt.show()
+
+        return {"k_values": k_values, "silhouette_scores": silhouette_scores}
+
+    @staticmethod
+    def gap_statistic(features, max_clusters=10, n_references=20):
+        """
+        Compute Gap Statistic for determining optimal number of clusters
+
+        :param features: Extracted image features
+        :param max_clusters: Maximum number of clusters to test
+        :param n_references: Number of reference datasets to generate
+        :return: Dictionary with gap statistic results
+        """
+        # Normalize features
+        scaler = StandardScaler()
+        scaled_features = scaler.fit_transform(features)
+
+        # Generate reference datasets
+        def generate_reference_data(features):
+            return np.random.random_sample(size=features.shape)
+
+        # Compute reference dispersion
+        reference_dispersions = []
+        gap_values = []
+
+        for k in range(1, max_clusters + 1):
+            # Compute dispersion for actual data
+            kmeans = KMeans(n_clusters=k, random_state=42)
+            kmeans.fit(scaled_features)
+            actual_dispersion = np.log(kmeans.inertia_)
+
+            # Compute reference dispersions
+            reference_disps = []
+            for _ in range(n_references):
+                ref_data = generate_reference_data(scaled_features)
+                ref_kmeans = KMeans(n_clusters=k, random_state=42)
+                ref_kmeans.fit(ref_data)
+                reference_disps.append(np.log(ref_kmeans.inertia_))
+
+            # Compute gap statistic
+            ref_dispersion = np.mean(reference_disps)
+            gap = ref_dispersion - actual_dispersion
+
+            reference_dispersions.append(ref_dispersion)
+            gap_values.append(gap)
+
+        # Visualize results
+        plt.figure(figsize=(10, 5))
+        plt.plot(range(1, max_clusters + 1), gap_values, "go-")
+        plt.xlabel("Number of Clusters (k)")
+        plt.ylabel("Gap Statistic")
+        plt.title("Gap Statistic Analysis")
+        plt.show()
+
+        return {
+            "k_values": range(1, max_clusters + 1),
+            "gap_values": gap_values,
+            "reference_dispersions": reference_dispersions,
+        }
+
 
 # Example usage
 def main():
@@ -221,12 +402,18 @@ def main():
         # Option 2: Load previously extracted features
         clusterer.load_features("my_image_features.pkl")
 
-    # cluster, visualize, create montage
-    (
-        clusterer.cluster_images(method="KMeans", n_clusters=20)
-        .visualize_clusters(save_path="cluster_visualization.png")
-        .create_cluster_montage(output_dir="cluster_montages")
-    )
+    # Choose one...
+    if False:
+        # Validate clustering and find optimal number of clusters
+        clusterer.validate_clusters(max_clusters=10)
+        # Looking at the code, they want to do this interactively...
+    else:
+        # cluster, visualize, create montage
+        (
+            clusterer.cluster_images(method="KMeans", n_clusters=20)
+            .visualize_clusters(save_path="cluster_visualization.png")
+            .create_cluster_montage(output_dir="cluster_montages")
+        )
 
 
 if __name__ == "__main__":
