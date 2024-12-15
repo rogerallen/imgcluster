@@ -69,7 +69,9 @@ class ImageClusterer:
             raise ValueError("No features extracted. Call extract_features() first.")
         
         # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        outdir = os.path.dirname(output_path)
+        if outdir != "":
+            os.makedirs(outdir, exist_ok=True)
         
         # Save features and image paths
         with open(output_path, 'wb') as f:
@@ -212,7 +214,7 @@ def main():
     # Create clusterer
     clusterer = ImageClusterer(image_directory)
     
-    if True:
+    if False:
         # Option 1: Extract and save features
         clusterer.extract_features().save_features('my_image_features.pkl')
     else:
@@ -221,7 +223,7 @@ def main():
     
     # cluster
     (clusterer.cluster_images(method='KMeans')  # Cluster the images
-             .visualize_clusters(ave_path='cluster_visualization.png')  # Visualize the clusters
+             .visualize_clusters(save_path='cluster_visualization.png')  # Visualize the clusters
              .create_cluster_montage(output_dir='cluster_montages'))  # Create montages
 
 if __name__ == '__main__':

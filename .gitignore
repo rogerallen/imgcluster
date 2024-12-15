@@ -2,3 +2,4 @@ venv/
 *.png
 images/
 cluster_montages
+*.pkl
