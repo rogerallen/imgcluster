@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import numpy as np
+import pickle
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.preprocessing import StandardScaler
@@ -57,6 +58,49 @@ class ImageClusterer:
         
         return self
     
+    def save_features(self, output_path='image_features.pkl'):
+        """
+        Save extracted features and image paths to a pickle file
+        
+        :param output_path: Path to save the features
+        :return: self
+        """
+        if len(self.features) == 0:
+            raise ValueError("No features extracted. Call extract_features() first.")
+        
+        # Create directory if it doesn't exist
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        # Save features and image paths
+        with open(output_path, 'wb') as f:
+            pickle.dump({
+                'features': self.features,
+                'image_paths': self.image_paths
+            }, f)
+        
+        print(f"Features saved to {output_path}")
+        return self
+    
+    def load_features(self, input_path='image_features.pkl'):
+        """
+        Load previously extracted features from a pickle file
+        
+        :param input_path: Path to load the features from
+        :return: self
+        """
+        if not os.path.exists(input_path):
+            raise FileNotFoundError(f"Feature file not found: {input_path}")
+        
+        # Load features and image paths
+        with open(input_path, 'rb') as f:
+            data = pickle.load(f)
+        
+        self.features = data['features']
+        self.image_paths = data['image_paths']
+        
+        print(f"Loaded {len(self.image_paths)} image features")
+        return self
+    
     def cluster_images(self, method='dbscan', n_clusters=5):
         """
         Cluster images using either DBSCAN or KMeans
@@ -65,6 +109,9 @@ class ImageClusterer:
         :param n_clusters: Number of clusters for KMeans (ignored for DBSCAN)
         :return: Array of cluster labels
         """
+        if len(self.features) == 0:
+            raise ValueError("No features available. Extract or load features first.")
+        
         # Normalize features
         scaler = StandardScaler()
         scaled_features = scaler.fit_transform(self.features)
@@ -165,17 +212,17 @@ def main():
     # Create clusterer
     clusterer = ImageClusterer(image_directory)
     
-    # Extract features
-    clusterer.extract_features()
+    if True:
+        # Option 1: Extract and save features
+        clusterer.extract_features().save_features('my_image_features.pkl')
+    else:
+        # Option 2: Load previously extracted features
+        clusterer.load_features('my_image_features.pkl')
     
-    # Cluster images (choose DBSCAN or KMeans)
-    clusterer.cluster_images(method='KMeans')
-    
-    # Visualize clusters
-    clusterer.visualize_clusters(save_path='cluster_visualization.png')
-    
-    # Create cluster montages
-    clusterer.create_cluster_montage(output_dir='cluster_montages')
+    # cluster
+    (clusterer.cluster_images(method='KMeans')  # Cluster the images
+             .visualize_clusters(ave_path='cluster_visualization.png')  # Visualize the clusters
+             .create_cluster_montage(output_dir='cluster_montages'))  # Create montages
 
 if __name__ == '__main__':
     main()
