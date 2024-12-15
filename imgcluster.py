@@ -142,7 +142,7 @@ class ImageClusterer:
             self.reduced_features[:, 0],
             self.reduced_features[:, 1],
             c=self.cluster_labels,
-            cmap="viridis",
+            cmap="tab20",  # "viridis",
         )
         plt.colorbar(scatter)
         plt.title("Image Clusters")
@@ -221,14 +221,12 @@ def main():
         # Option 2: Load previously extracted features
         clusterer.load_features("my_image_features.pkl")
 
-    # cluster
+    # cluster, visualize, create montage
     (
-        clusterer.cluster_images(method="KMeans", n_clusters=15)  # Cluster the images
-        .visualize_clusters(
-            save_path="cluster_visualization.png"
-        )  # Visualize the clusters
+        clusterer.cluster_images(method="KMeans", n_clusters=20)
+        .visualize_clusters(save_path="cluster_visualization.png")
         .create_cluster_montage(output_dir="cluster_montages")
-    )  # Create montages
+    )
 
 
 if __name__ == "__main__":
