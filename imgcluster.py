@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 from tensorflow.keras.preprocessing import image
 from sklearn.decomposition import PCA
-import umap
+#import umap
 
 class ImageClusterer:
     def __init__(self, directory):
@@ -214,6 +214,7 @@ def main():
     # Create clusterer
     clusterer = ImageClusterer(image_directory)
     
+    # Choose one...
     if False:
         # Option 1: Extract and save features
         clusterer.extract_features().save_features('my_image_features.pkl')
@@ -222,7 +223,7 @@ def main():
         clusterer.load_features('my_image_features.pkl')
     
     # cluster
-    (clusterer.cluster_images(method='KMeans')  # Cluster the images
+    (clusterer.cluster_images(method='KMeans',n_clusters=15)  # Cluster the images
              .visualize_clusters(save_path='cluster_visualization.png')  # Visualize the clusters
              .create_cluster_montage(output_dir='cluster_montages'))  # Create montages
 
