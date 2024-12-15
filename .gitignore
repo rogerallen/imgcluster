@@ -1,5 +1,6 @@
+.vscode/
 venv/
-*.png
 images/
-cluster_montages
+cluster_montages/
+*.png
 *.pkl
