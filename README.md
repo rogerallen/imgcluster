@@ -1,8 +1,14 @@
-# prompt
+# Image Cluster
 
-I would like to take a directory of images and "score" the images in some manner in order to find and display the images in a way to show clusters of similar images
+An experiment in using Claude.ai to code something up.
 
-# claude 3.5 Haiku response
+## prompt
+
+I would like to take a directory of images and "score" the images in some manner in order to find and display the images in a way to show clusters of similar images.
+
+Afterwards, I also asked to load & save the model.
+
+## claude 3.5 Haiku response
 
 see imgcluster.py
 
@@ -75,7 +81,7 @@ Modify visualization techniques
 
 Would you like me to elaborate on any part of the script or explain how to adapt it to your specific use case?
 
-# setup
+## setup
 
 ```
 python3 -m venv venv
@@ -83,15 +89,19 @@ source venv/bin/activate
 python -m pip install numpy matplotlib scikit-learn tensorflow umap-learn
 
 mkdir images
+# here is an archive of 500 tweegeemee images from the end of 2022 
 cp /mnt/prev/home/rallen/Documents/tweegeemee_image_archive_2408/2022/*png images
 $ ls images/ |wc -l
 536
 
-works in about 2m37s !  
 
 ```
 
-# results
+## results
 
-DBScan not as good as KMeans
+DBScan not as good as KMeans.
+
+Works in about 2m37s !  
+
+Increasing the number of clusters works better for me.
 
