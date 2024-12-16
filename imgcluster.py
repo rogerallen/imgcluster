@@ -7,6 +7,7 @@ from scipy.spatial.distance import cdist
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
+from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 from tensorflow.keras.preprocessing import image
@@ -226,6 +227,98 @@ class ImageClusterer:
 
         print("\nGap Statistic Analysis:")
         gap_results = ClusterValidator.gap_statistic(self.features, max_clusters)
+
+        return self
+
+    def find_similar_images(self, index, n_images=5, max_distance=None):
+        """
+        Find similar images to the image at the given index
+
+        :param index: Index of the reference image in self.features
+        :param n_images: Number of similar images to return
+        :param max_distance: Maximum distance for considering an image similar
+        :return: Dictionary containing similar image information
+        """
+        if len(self.features) == 0:
+            raise ValueError("No features available. Extract features first.")
+
+        if index < 0 or index >= len(self.features):
+            raise ValueError(
+                f"Invalid index. Must be between 0 and {len(self.features) - 1}"
+            )
+
+        # Calculate distances from the reference image to all other images
+        reference_feature = self.features[index].reshape(1, -1)
+        distances = euclidean_distances(reference_feature, self.features)[0]
+
+        # Create a list of (distance, image_index) pairs
+        distance_index_pairs = list(enumerate(distances))
+
+        # Sort by distance, excluding the reference image itself
+        sorted_similar = sorted(
+            [(dist, idx) for idx, dist in enumerate(distances) if idx != index],
+            key=lambda x: x[0],
+        )
+
+        # Filter by maximum distance if specified
+        if max_distance is not None:
+            sorted_similar = [
+                (dist, idx) for dist, idx in sorted_similar if dist <= max_distance
+            ]
+
+        # Limit to n_images
+        similar_images = sorted_similar[:n_images]
+
+        # Prepare results
+        results = {
+            "reference_image_path": self.image_paths[index],
+            "similar_images": [],
+        }
+
+        # Collect information about similar images
+        for distance, similar_index in similar_images:
+            results["similar_images"].append(
+                {"path": self.image_paths[similar_index], "distance": distance}
+            )
+
+        return results
+
+    def visualize_similar_images(self, index, n_images=5, max_distance=None):
+        """
+        Visualize the reference image and its most similar images
+
+        :param index: Index of the reference image
+        :param n_images: Number of similar images to display
+        :param max_distance: Maximum distance for considering an image similar
+        :return: self
+        """
+        # Find similar images
+        similar_results = self.find_similar_images(index, n_images, max_distance)
+
+        # Determine grid size
+        total_images = len(similar_results["similar_images"]) + 1
+        grid_size = int(np.ceil(np.sqrt(total_images)))
+
+        # Create plot
+        plt.figure(figsize=(15, 15))
+
+        # Plot reference image
+        plt.subplot(grid_size, grid_size, 1)
+        ref_img = image.load_img(similar_results["reference_image_path"])
+        plt.imshow(ref_img)
+        plt.title("Reference Image")
+        plt.axis("off")
+
+        # Plot similar images
+        for i, similar_image in enumerate(similar_results["similar_images"], 1):
+            plt.subplot(grid_size, grid_size, i + 1)
+            sim_img = image.load_img(similar_image["path"])
+            plt.imshow(sim_img)
+            plt.title(f'Similar (Dist: {similar_image["distance"]:.2f})')
+            plt.axis("off")
+
+        plt.tight_layout()
+        plt.show()
 
         return self
 
