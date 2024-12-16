@@ -20,7 +20,7 @@ $ ls images/ |wc -l
 
 ```
 
-## results
+## TLDR results
 
 I found this experience indistinguishable from working with a knowledgable expert.   There were only a very minor number of issues with the code.  Crazily bug free.  Not that I will use this code as-is, but I got something working and useful without taxing my brain at all.  I'm quite happy with how this experiment went.  I think I'll be able to step off to make something of my own pretty easily.
 
