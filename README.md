@@ -1,16 +1,34 @@
 # Image Cluster
 
-An experiment in using Claude.ai to code something up.
+The www.tweegeemee.com bot has created a ton of images and I would like to do some exploration of the images to find similar images.  I decided to just ask an LLM for help.  This repo is an experiment in using Claude.ai 3.5 Haiku to code something up.
+
+## results
+
+I found this experience indistinguishable from working with a knowledgable expert.   There were only a very minor number of issues with the code.  Crazily bug free.  Not that I will use this code as-is, but I got something working and useful without taxing my brain at all.  I'm quite happy with how this experiment went.  I think I'll be able to step off to make something of my own pretty easily.
+
+### imgcluster.py
+
+The main python code went into this file.
+
+### clustervalidator.ipynb
+
+When I asked about clusters, it created functions that plotted data so I put it in a Jupyter notebook.  Looking at what this shows...it just always seems to get better wtih more clusters.  I didn't see much of an "elbow" or "knee" in the curve.
+
+### similar_images.ipynb
+
+Again, the similar images code was plotting interactive graphs, so I made another notebook.  This looks really useful.  
 
 ## prompts
 
+Not a full transcript, but most of the non-code output.  For the code see the code.
+
 ### prompt 1
 
-I would like to take a directory of images and "score" the images in some manner in order to find and display the images in a way to show clusters of similar images.
+*I would like to take a directory of images and "score" the images in some manner in order to find and display the images in a way to show clusters of similar images.
 
-Afterwards, I also asked to load & save the model.
+Afterwards, I also asked to load & save the model.*
 
-### claude 3.5 Haiku response
+### response
 
 see imgcluster.py
 
@@ -230,6 +248,8 @@ Would you like me to elaborate on how the similarity is calculated or show you h
 
 ## setup
 
+I did the following without Claude's help.  
+
 ```
 python3 -m venv venv
 source venv/bin/activate
@@ -243,20 +263,3 @@ $ ls images/ |wc -l
 
 ```
 
-## results
-
-DBScan not as good as KMeans.
-
-Works in about 2m37s !  
-
-Increasing the number of clusters works better for me.
-
-There were only a very minor number of issues with the code.  Crazily accurate.
-
-### clustervalidator.ipynb
-
-Going to evaluate what this shows.  For now I'm not really sure...it just always seems to get better wtih more clusters.
-
-### similar_images.ipynb
-
-Yes, this looks really useful.  
