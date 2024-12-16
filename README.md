@@ -18,11 +18,19 @@ cp /mnt/prev/home/rallen/Documents/tweegeemee_image_archive_2408/2022/*png image
 $ ls images/ |wc -l
 536
 
+# later
+python -m pip install torch torchvision pillow # ERROR: clip
+# UPDATE: installing CLIP from https://github.com/openai/CLIP#usage
+python -m pip install ftfy regex tqdm
+python -m pip install git+https://github.com/openai/CLIP.git
+
 ```
 
 ## TLDR results
 
 I found this experience indistinguishable from working with a knowledgable expert.   There were only a very minor number of issues with the code.  Crazily bug free.  Not that I will use this code as-is, but I got something working and useful without taxing my brain at all.  I'm quite happy with how this experiment went.  I think I'll be able to step off to make something of my own pretty easily.
+
+UPDATE: first "issue" with the response.  Installing "CLIP" is not as easy as suggested.  Going to try the instructions at the repo here: https://github.com/openai/CLIP#usage
 
 * __imgcluster.py__ - The main python code went into this file.
 
@@ -258,5 +266,68 @@ Can return either a fixed number of closest images or all images within a distan
 
 Would you like me to elaborate on how the similarity is calculated or show you how to use these methods with your specific image set?
 
+### prompt 4 (last before context runs out)
 
+_can you tell me about different models to use besides resnet50?  The images I am classifying are artistic and abstract.  What model might be best to use in that case?_
+
+### response
+
+For artistic and abstract images, some neural network architectures might be more suitable than ResNet50, which is typically trained on natural images. Here are some alternative models that could work well:
+
+1. **CLIP (Contrastive Language-Image Pre-training)**:
+   - Developed by OpenAI
+   - Excellent for abstract and artistic images
+   - Can understand images in a more conceptual way
+   - Works well with diverse and non-traditional image types
+   - Can extract features based on semantic meaning rather than just visual patterns
+
+2. **DeiT (Data-efficient Image Transformers)**:
+   - Better at understanding abstract and less structured images
+   - More flexible feature extraction
+   - Performs well on smaller datasets
+   - Good at capturing intricate visual details
+
+3. **Vision Transformer (ViT)**:
+   - Treats images as sequences of patches
+   - More adaptable to abstract and non-standard imagery
+   - Can capture complex, non-linear relationships in images
+
+4. **DINO (Emerging Properties in Self-Supervised Vision Transformers)**:
+   - Self-supervised learning approach
+   - Excellent at understanding image semantics
+   - Works well with diverse image types
+   - Can extract meaningful features without explicit labeling
+
+5. **EfficientNet**:
+   - Provides a good balance between model size and performance
+   - Multiple variants (B0-B7) with different complexities
+   - Can be fine-tuned for specific types of images
+
+Here's a sample implementation demonstrating how to use CLIP for feature extraction:
+
+[see code]
+
+**Prerequisites for this implementation**:
+```bash
+pip install torch torchvision clip scikit-learn pillow matplotlib
+```
+
+**Key Advantages of CLIP for Artistic Images**:
+- Semantic understanding beyond visual patterns
+- Trained on diverse, conceptual image datasets
+- Can capture abstract and non-traditional image characteristics
+- Works well with small and varied image collections
+
+**Considerations**:
+- CLIP might be more computationally expensive
+- Requires PyTorch and GPU is recommended
+- Different CLIP model variants (ViT-B/32, ViT-B/16) offer trade-offs between speed and accuracy
+
+**Recommendation Process**:
+1. Try multiple models
+2. Compare clustering results
+3. Visually inspect cluster quality
+4. Choose the model that best captures the nuances of your specific artistic images
+
+Would you like me to elaborate on any of these models or discuss how to choose the best feature extraction approach for your specific artistic image set?
 
