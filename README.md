@@ -2,6 +2,24 @@
 
 The www.tweegeemee.com bot has created a ton of images and I would like to do some exploration of the images to find similar images.  Instead of diving into coding right off, I decided to ask an LLM for help.  This repo is an experiment in using Claude.ai 3.5 Haiku to code something up quickly.
 
+## setup
+
+I did the following without Claude's help to get a python environment setup and some images to play with.
+
+```
+python3 -m venv venv
+source venv/bin/activate
+# (okay the list of modules was from claude)
+python -m pip install numpy matplotlib scikit-learn tensorflow umap-learn
+
+mkdir images
+# here is an archive of 500 tweegeemee images from the end of 2022 
+cp /mnt/prev/home/rallen/Documents/tweegeemee_image_archive_2408/2022/*png images
+$ ls images/ |wc -l
+536
+
+```
+
 ## results
 
 I found this experience indistinguishable from working with a knowledgable expert.   There were only a very minor number of issues with the code.  Crazily bug free.  Not that I will use this code as-is, but I got something working and useful without taxing my brain at all.  I'm quite happy with how this experiment went.  I think I'll be able to step off to make something of my own pretty easily.
@@ -18,9 +36,9 @@ Not a full transcript, but most of the non-code output.  For the code see the co
 
 ### prompt 1
 
-*I would like to take a directory of images and "score" the images in some manner in order to find and display the images in a way to show clusters of similar images.
+_I would like to take a directory of images and "score" the images in some manner in order to find and display the images in a way to show clusters of similar images._
 
-Afterwards, I also asked to load & save the model.*
+_Afterwards, I also asked to load & save the model._
 
 ### response
 
@@ -97,7 +115,7 @@ Would you like me to elaborate on any part of the script or explain how to adapt
 
 ### prompt 2
 
-when doing kmeans clustering, how can I decide n_clusters?  Can I try many clusters and "score" the clustering?
+_when doing kmeans clustering, how can I decide n_clusters?  Can I try many clusters and "score" the clustering?_
 
 ### response
 
@@ -153,7 +171,7 @@ clusterer.cluster_images(method='kmeans', n_clusters=5)
 
 Would you like me to explain how to interpret these results or help you determine the best number of clusters for your specific image set?
 
-*I asked for more information about Distortion and Inertia*
+_I asked for more information about Distortion and Inertia_
 
 Distortion:
 
@@ -190,7 +208,7 @@ Both help in determining the optimal number of clusters
 
 ### prompt 3 
 
-I'd like to ask the model to answer a different question.  Given a self.features index (i), find the closest N images or perhaps the closest images that are within some metric (R?) distance from self.features[i]
+_I'd like to ask the model to answer a different question.  Given a self.features index (i), find the closest N images or perhaps the closest images that are within some metric (R?) distance from self.features[i]_
 
 ### response
 
@@ -240,20 +258,5 @@ Can return either a fixed number of closest images or all images within a distan
 
 Would you like me to elaborate on how the similarity is calculated or show you how to use these methods with your specific image set?
 
-## setup
 
-I did the following without Claude's help.  
-
-```
-python3 -m venv venv
-source venv/bin/activate
-python -m pip install numpy matplotlib scikit-learn tensorflow umap-learn
-
-mkdir images
-# here is an archive of 500 tweegeemee images from the end of 2022 
-cp /mnt/prev/home/rallen/Documents/tweegeemee_image_archive_2408/2022/*png images
-$ ls images/ |wc -l
-536
-
-```
 
