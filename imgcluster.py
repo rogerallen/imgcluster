@@ -828,32 +828,40 @@ def main():
     image_directory = "./images"
 
     # Create clusterer, choose one
+    # clusterer = ImageClusterer(image_directory)
     if False:
-        clusterer = ImageClusterer(image_directory)
-    else:
-        clusterer = ArtisticImageClusterer(image_directory, model_name="ViT-B/32")
-
-    # Choose one...
-    if False:
-        # Option 1: Extract and save features
-        clusterer.extract_features().save_features("artistic_vitb32_image_features.pkl")
+        for model in clip.available_models():
+            nice_model = model.replace("/", "-").replace("@", "-")
+            print(model, nice_model)
+            clusterer = ArtisticImageClusterer(image_directory, model_name=model)
+            clusterer.extract_features().save_features(
+                f"image_features_{nice_model}.pkl"
+            )
     else:
         # Option 2: Load previously extracted features
         # clusterer.load_features("my_image_features.pkl")
-        clusterer.load_features("artistic_vitb32_image_features.pkl")
+        # pick one ['RN50', 'RN101', 'RN50x4', 'RN50x16', 'RN50x64', 'ViT-B/32', 'ViT-B/16', 'ViT-L/14', 'ViT-L/14@336px']
+        for model in clip.available_models():
+            nice_model = model.replace("/", "-").replace("@", "-")
+            print(model, nice_model)
+            clusterer = ArtisticImageClusterer(image_directory, model_name=model)
+            clusterer.load_features(f"image_features_{nice_model}.pkl")
 
-    # Choose one...
-    if False:
-        # Validate clustering and find optimal number of clusters
-        clusterer.validate_clusters(max_clusters=10)
-        # Looking at the code, they want to do this interactively...
-    else:
-        # cluster, visualize, create montage
-        clusterer.cluster_images(method="KMeans", n_clusters=20)
-        clusterer.visualize_clusters(
-            save_path="cluster_visualization_artistic_vitb32_n20.png"
-        )
-        clusterer.create_cluster_montage(output_dir="cluster_montages_artistic_vitb32")
+            # Choose one...
+            if False:
+                # Validate clustering and find optimal number of clusters
+                clusterer.validate_clusters(max_clusters=10)
+                # Looking at the code, they want to do this interactively...
+            else:
+                # cluster, visualize, create montage
+                n_clusters = 20
+                clusterer.cluster_images(method="KMeans", n_clusters=n_clusters)
+                clusterer.visualize_clusters(
+                    save_path=f"cluster_artistic_viz_{nice_model}_n{n_clusters}.png"
+                )
+                clusterer.create_cluster_montage(
+                    output_dir=f"cluster_artistic_montages_{nice_model}_n{n_clusters}"
+                )
 
 
 if __name__ == "__main__":
