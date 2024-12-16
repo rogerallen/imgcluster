@@ -1,22 +1,16 @@
 # Image Cluster
 
-The www.tweegeemee.com bot has created a ton of images and I would like to do some exploration of the images to find similar images.  I decided to just ask an LLM for help.  This repo is an experiment in using Claude.ai 3.5 Haiku to code something up.
+The www.tweegeemee.com bot has created a ton of images and I would like to do some exploration of the images to find similar images.  Instead of diving into coding right off, I decided to ask an LLM for help.  This repo is an experiment in using Claude.ai 3.5 Haiku to code something up quickly.
 
 ## results
 
 I found this experience indistinguishable from working with a knowledgable expert.   There were only a very minor number of issues with the code.  Crazily bug free.  Not that I will use this code as-is, but I got something working and useful without taxing my brain at all.  I'm quite happy with how this experiment went.  I think I'll be able to step off to make something of my own pretty easily.
 
-### imgcluster.py
+* __imgcluster.py__ - The main python code went into this file.
 
-The main python code went into this file.
+* __clustervalidator.ipynb__ - When I asked about clusters, it created functions that plotted data so I put it in a Jupyter notebook.  Looking at what this shows...it just always seems to get better wtih more clusters.  I didn't see much of an "elbow" or "knee" in the curve.
 
-### clustervalidator.ipynb
-
-When I asked about clusters, it created functions that plotted data so I put it in a Jupyter notebook.  Looking at what this shows...it just always seems to get better wtih more clusters.  I didn't see much of an "elbow" or "knee" in the curve.
-
-### similar_images.ipynb
-
-Again, the similar images code was plotting interactive graphs, so I made another notebook.  This looks really useful.  
+* __similar_images.ipynb__ - Again, the similar images code was plotting interactive graphs, so I made another notebook.  This looks really useful.  
 
 ## prompts
 
