@@ -643,7 +643,8 @@ class ArtisticImageClusterer:
         grid_size = int(np.ceil(np.sqrt(total_images)))
 
         # Create plot
-        plt.figure(figsize=(15, 15))
+        # plt.figure(figsize=(15, 15))
+        plt.figure(figsize=(7, 7))
 
         # Plot reference image
         plt.subplot(grid_size, grid_size, 1)
@@ -657,7 +658,7 @@ class ArtisticImageClusterer:
             plt.subplot(grid_size, grid_size, i + 1)
             sim_img = image.load_img(similar_image["path"])
             plt.imshow(sim_img)
-            plt.title(f'Similar (Dist: {similar_image["distance"]:.2f})')
+            plt.title(f'Dist: {similar_image["distance"]:.2f}')
             plt.axis("off")
 
         plt.tight_layout()
